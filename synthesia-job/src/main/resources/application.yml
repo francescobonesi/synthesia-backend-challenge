@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: "Synthesia Tech Challenge Job"
+  rabbitmq:
+    host: localhost
+

@@ -1,0 +1,24 @@
+
+group 'it.francesco.synthesia'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+
+subprojects {
+
+    apply plugin: 'java'
+
+    configurations {
+        developmentOnly
+        runtimeClasspath {
+            extendsFrom developmentOnly
+        }
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+}
+

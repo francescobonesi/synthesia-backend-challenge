@@ -1,0 +1,4 @@
+rootProject.name = 'synthesia'
+include 'synthesia-api'
+include 'synthesia-job'
+
