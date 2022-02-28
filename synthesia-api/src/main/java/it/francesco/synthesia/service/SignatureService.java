@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +20,23 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 public class SignatureService {
 
-    public RabbitTemplate rabbitTemplate;
-    public MessageRepository messageRepository;
-    public RabbitMqListener listener;
+    public final RabbitTemplate rabbitTemplate;
+    public final MessageRepository messageRepository;
+    public final RabbitMqListener listener;
+    public final String sendQueue;
+    public final Long timeout;
 
     @Autowired
-    public SignatureService(RabbitTemplate rabbitTemplate, MessageRepository messageRepository, RabbitMqListener listener) {
+    public SignatureService(RabbitTemplate rabbitTemplate,
+                            MessageRepository messageRepository,
+                            RabbitMqListener listener,
+                            @Value("${queue.requests}") String sendQueue,
+                            @Value("${synthesia.timeout}") Long timeout) {
         this.rabbitTemplate = rabbitTemplate;
         this.messageRepository = messageRepository;
         this.listener = listener;
+        this.sendQueue = sendQueue;
+        this.timeout = timeout;
     }
 
     public Optional<Message> getMessageById(String identifier) {
@@ -47,7 +56,7 @@ public class SignatureService {
             messageRepository.save(message);
 
             log.info("Sending message in queue: {}", message);
-            rabbitTemplate.convertAndSend("requests", message);
+            rabbitTemplate.convertAndSend(sendQueue, message);
 
         } catch (DataIntegrityViolationException e) {
             log.info("No need to worry. " +
@@ -71,7 +80,7 @@ public class SignatureService {
 
         Waiter waiter = listener.addSignatureWaiter(identifier);
         try {
-            boolean countdownHasDone = waiter.getCountDownLatch().await(2, SECONDS);
+            boolean countdownHasDone = waiter.getCountDownLatch().await(timeout, SECONDS);
             log.info("Countdown for {} has ended with status {}", identifier, countdownHasDone);
         } catch (InterruptedException e) {
             log.warn("Got exception: {}", e.getMessage());

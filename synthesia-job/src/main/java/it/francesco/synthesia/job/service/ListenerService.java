@@ -7,21 +7,32 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class ListenerService {
 
-    @Autowired
-    public RabbitTemplate rabbitTemplate;
+    public final RabbitTemplate rabbitTemplate;
+    public final SynthesiaClient synthesiaClient;
+    public final String sendQueue;
+    public final Long retryTime;
 
     @Autowired
-    public SynthesiaClient synthesiaClient;
+    public ListenerService(RabbitTemplate rabbitTemplate,
+                           SynthesiaClient synthesiaClient,
+                           @Value("${queue.signatures}") String sendQueue,
+                           @Value("${synthesia.retryTime}") Long retryTime) {
+        this.rabbitTemplate = rabbitTemplate;
+        this.synthesiaClient = synthesiaClient;
+        this.sendQueue = sendQueue;
+        this.retryTime = retryTime;
+    }
 
-    public void sendSignatureToQueue(Message message) {
+    private void sendSignatureToQueue(Message message) {
         log.info("Sending message in signatures queue: {}", message);
-        rabbitTemplate.convertAndSend("signatures", message);
+        rabbitTemplate.convertAndSend(sendQueue, message);
     }
 
     private String getSignatureFromApi(String message) {
@@ -33,17 +44,17 @@ public class ListenerService {
         }
     }
 
-    @RabbitListener(containerFactory = "rabbitListenerContainerFactory", queues = "requests")
+    @RabbitListener(containerFactory = "rabbitListenerContainerFactory", queues = "${queue.requests}")
     public void requestsListener(Message inMessage) throws InterruptedException {
         log.info("Request received: " + inMessage);
 
         boolean hasDone = false;
         String signature = null;
 
-        while(!hasDone){
+        while (!hasDone) {
             signature = getSignatureFromApi(inMessage.getMessage());
-            if(signature != null) hasDone = true;
-            else Thread.sleep(10000);
+            if (signature != null) hasDone = true;
+            else Thread.sleep(retryTime);
         }
 
         inMessage.setSignature(signature);

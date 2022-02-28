@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class SignatureController {
 
     private static final String COURTESY_MESSAGE = "We are working for you, retry later!";
-    public static final String GIVING_SIGNATURE_MESSAGE = "Here is your signature!";
+    private static final String GIVING_SIGNATURE_MESSAGE = "Here is your signature!";
+
+    public SignatureService signatureService;
 
     @Autowired
-    public SignatureService signatureService;
+    public SignatureController(SignatureService signatureService) {
+        this.signatureService = signatureService;
+    }
 
     @GetMapping("/crypto/sign/{identifier}")
     public ResponseEntity<MessageResponse> getSaved(@PathVariable("identifier") String identifier){

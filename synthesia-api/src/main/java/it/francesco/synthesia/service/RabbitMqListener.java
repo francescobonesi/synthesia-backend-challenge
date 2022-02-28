@@ -64,7 +64,7 @@ public class RabbitMqListener {
         }
     }
 
-    @RabbitListener(queues = "signatures")
+    @RabbitListener(queues = "${queue.signatures}")
     public void signaturesListener(Message inMessage) {
         log.info("Message received from signature job: " + inMessage);
         inMessage.setStatus(MessageStatus.SIGNED);

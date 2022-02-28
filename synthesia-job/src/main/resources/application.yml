@@ -11,9 +11,14 @@ job:
     consumers: 10
     maxConsumers: 20
 
+queue:
+  requests: "requests"
+  signatures: "signatures"
+
 synthesia:
   url: "https://hiring.api.synthesia.io"
   key: "0b91c7c988a71242641b9d3cf3a9a8b6"
+  retryTime: 10000
 
 feign:
   client:
