@@ -77,8 +77,6 @@ public class RabbitMqListener {
             waiter.setDone(true);
             waiter.getCountDownLatch().countDown();
         }
-
-
     }
 
 }

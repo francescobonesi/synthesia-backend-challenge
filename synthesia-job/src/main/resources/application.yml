@@ -4,3 +4,33 @@ spring:
   rabbitmq:
     host: localhost
 
+server.port: 9090
+
+job:
+  concurrent:
+    consumers: 10
+    maxConsumers: 20
+
+synthesia:
+  url: "https://hiring.api.synthesia.io"
+  key: "0b91c7c988a71242641b9d3cf3a9a8b6"
+
+feign:
+  client:
+    config:
+      synthesia:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+        requestInterceptors:
+          - it.francesco.synthesia.job.feign.SynthesiaRequestInterceptor
+        decode404: false
+  hystrix:
+    enabled: false
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
