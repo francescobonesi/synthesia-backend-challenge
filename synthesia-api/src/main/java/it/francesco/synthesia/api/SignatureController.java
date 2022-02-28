@@ -1,8 +1,9 @@
 package it.francesco.synthesia.api;
 
-import it.francesco.synthesia.tech.challenge.model.Message;
-import it.francesco.synthesia.tech.challenge.model.MessageResponse;
-import it.francesco.synthesia.tech.challenge.service.SignatureService;
+
+import it.francesco.synthesia.model.Message;
+import it.francesco.synthesia.model.MessageResponse;
+import it.francesco.synthesia.service.SignatureService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,9 +1,9 @@
 package it.francesco.synthesia.service;
 
-import it.francesco.synthesia.tech.challenge.model.Message;
-import it.francesco.synthesia.tech.challenge.model.MessageStatus;
-import it.francesco.synthesia.tech.challenge.model.Waiter;
-import it.francesco.synthesia.tech.challenge.repository.MessageRepository;
+import it.francesco.synthesia.model.Message;
+import it.francesco.synthesia.model.MessageStatus;
+import it.francesco.synthesia.model.Waiter;
+import it.francesco.synthesia.repository.MessageRepository;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

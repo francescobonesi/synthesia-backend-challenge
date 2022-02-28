@@ -6,19 +6,18 @@ repositories {
     mavenCentral()
 }
 
-
 subprojects {
 
     apply plugin: 'java'
 
-    configurations {
-        developmentOnly
-        runtimeClasspath {
-            extendsFrom developmentOnly
-        }
-        compileOnly {
-            extendsFrom annotationProcessor
-        }
-    }
+//    configurations {
+//        developmentOnly
+//        runtimeClasspath {
+//            extendsFrom developmentOnly
+//        }
+//        compileOnly {
+//            extendsFrom annotationProcessor
+//        }
+//    }
 }
 
