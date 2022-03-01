@@ -11,5 +11,7 @@ public class MessageResponse {
 
     private String signature;
     private String info;
+    private String waitingWebsite;
+    private String pollingPath;
 
 }

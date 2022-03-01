@@ -20,4 +20,6 @@ queue:
   requests: "requests"
   signatures: "signatures"
 
-synthesia.timeout: 2 # seconds
+synthesia:
+  baseWaitingUrl: "http://localhost:3000/?identifier="
+  timeout: 2 # seconds

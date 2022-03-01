@@ -5,7 +5,6 @@ import it.francesco.synthesia.model.MessageStatus;
 import it.francesco.synthesia.model.Waiter;
 import it.francesco.synthesia.repository.MessageRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,9 +92,9 @@ public class SignatureService {
 
     }
 
-    public Message sign(String msgStr) {
+    public Message sign(String msgStr, String identifier) {
 
-        String identifier = DigestUtils.sha256Hex(msgStr);
+
         Optional<Message> savedSignature = getMessageById(identifier);
 
         if (savedSignature.isPresent() && savedSignature.get().getStatus().equals(MessageStatus.SIGNED)) {
