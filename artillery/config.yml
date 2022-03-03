@@ -1,16 +1,16 @@
 config:
   target: "http://localhost:8080"
   phases:
-    - duration: 5
+    - duration: 60
+      arrivalRate: 1
+      name: Warm up (60 req per min)
+    - duration: 60
+      arrivalRate: 1
+      rampTo: 5
+      name: Ramp up load (from 60 to 300 req per min)
+    - duration: 180
       arrivalRate: 5
-      name: Warm up
-#    - duration: 120
-#      arrivalRate: 5
-#      rampTo: 50
-#      name: Ramp up load
-#    - duration: 600
-#      arrivalRate: 50
-#      name: Sustained load
+      name: Sustained load (300 req per min)
   payload:
     path: "keyword.csv"
     fields:

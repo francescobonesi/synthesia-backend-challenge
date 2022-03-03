@@ -58,7 +58,7 @@ public class ListenerService {
         }
 
         inMessage.setSignature(signature);
-
+        log.info("Completed for identifier = {}", inMessage.getIdentifier());
         sendSignatureToQueue(inMessage);
 
     }
