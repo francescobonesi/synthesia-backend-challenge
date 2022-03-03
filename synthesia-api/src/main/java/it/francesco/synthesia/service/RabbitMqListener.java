@@ -18,7 +18,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class RabbitMqListener {
 
-    private final Map<String, List<Waiter>> signatureWaiters;
+    Map<String, List<Waiter>> signatureWaiters;
     public MessageRepository messageRepository;
 
     @Autowired
@@ -33,7 +33,6 @@ public class RabbitMqListener {
         waiter.setCountDownLatch(new CountDownLatch(1));
 
         if (signatureWaiters.containsKey(identifier)) {
-
             signatureWaiters.get(identifier).add(waiter);
         } else {
             ArrayList<Waiter> waiters = new ArrayList<>();
@@ -59,6 +58,7 @@ public class RabbitMqListener {
         int waiterSizeForIdentifier = waiters.size();
         if (waiterSizeForIdentifier == 0) {
             log.info("Waiters for identifier {} are zero, removing from map", identifier);
+            signatureWaiters.remove(identifier);
         } else {
             log.info("Waiters for identifier {} are still {}", identifier, waiterSizeForIdentifier);
         }
