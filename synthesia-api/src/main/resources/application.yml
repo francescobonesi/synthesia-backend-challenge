@@ -23,3 +23,7 @@ queue:
 synthesia:
   baseWaitingUrl: "http://localhost:3000/?identifier="
   timeout: 2 # seconds
+
+springdoc:
+  api-docs:
+    path: /swagger

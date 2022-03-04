@@ -2,13 +2,21 @@ version: '3'
 services:
   rabbitmq:
     image: rabbitmq:management
+    hostname: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
   mariadb:
     image: mariadb
+    hostname: mariadb
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: funnystory
       MYSQL_DATABASE: messagedb
+  waiting:
+    image: francesco/waiting
+    hostname: signature-waiting
+    ports:
+      - "3000:3000"
+

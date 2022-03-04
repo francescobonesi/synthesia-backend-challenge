@@ -1,0 +1,259 @@
+
+# Synthesia Backend Tech Challenge
+
+Solution for Synthesia Backend Tech Challenge: [link](https://www.notion.so/Synthesia-Backend-Tech-Challenge-52a82f750aed436fbefcf4d8263a97be)
+
+## Overview
+
+The solution is composed by a rest api service (Api-service), exposing /crypto/sign endpoint, 
+and an asynchronous worker (Job-service) that 
+integrates with Synthesia /crypto/sign endpoint.
+
+The two components communicate via RabbitMQ message broker 
+using two queues in order to be decoupled, independent and asynchronous.
+
+For each http request, the Api-service will queue a message that will be processed by Job-service.
+When the elaboration of signature is done by Job-service, it will queue the signature in another queue and
+the Api-service will read it and store it in a database.
+
+For each http request, after sending the message, the Api-service will wait 2 seconds for the signature to arrive.
+If the 2 seconds pass, then will return to caller a courtesy message and a link to a single page application
+that will display the signature as soon as the job finish processing it.
+
+The single page application polls a second api from Api-service, /signature/<identifier>, in order to get 
+stored signatures when available. This webapp will entertain the requester while they wait for signature.
+
+## Prerequisites
+
+* java jdk 17
+* docker
+* docker-compose
+* node 13.12.0
+* npm 6.14.4
+
+## Components
+
+* RabbitMQ [link](https://www.rabbitmq.com/): message broker used in this project for queues and asynchronous job patterns
+* MariaDB [link](https://mariadb.org/): Relational DB used for storing in process jobs and signed messages
+* React Single Page Application, called Waiting website: SPA with signature when available
+* Spring Boot api service: rest api service exposing reliable endpoint for signature
+* Spring Boot job service: asynchronous worker for obtaining signature when available
+
+## Structure
+
+Here follows the tree of solution.
+
+```
+.
+├── artillery
+│   ├── config.yml
+│   └── keyword.csv
+├── build.gradle
+├── docker-compose.yml
+├── gradle
+│   └── wrapper
+├── gradlew
+├── gradlew.bat
+├── Makefile
+├── ReadMe.md
+├── settings.gradle
+├── synthesia-api  ## Spring boot api service
+│   ├── build
+│   ├── build.gradle
+│   ├── Dockerfile
+│   └── src
+├── synthesia-job  ## Spring boot job service
+│   ├── build
+│   ├── build.gradle
+│   ├── Dockerfile
+│   └── src
+└── waiting-page  ## React single page app
+    ├── Dockerfile
+    ├── node_modules
+    ├── package.json
+    ├── package-lock.json
+    ├── public
+    └── src
+```
+
+## Setup
+
+For all setup, commands have been collected in Makefile.
+
+### Compile
+
+Use java 17 jdk to compile both applications
+
+```
+make java_home=<path_to_jdk> compile
+```
+
+It uses gradle wrapper, configured inside project. 
+This also executes application unit tests.
+
+### Build docker images
+
+The command
+
+```
+make build
+```
+
+will build 3 docker images:
+
+* francesco/api  with spring boot api service
+* francesco/job  with spring boot job service
+* francesco/waiting  with waiting react spa
+
+### Start infrastructure
+
+The command
+
+```
+make init
+```
+
+will run docker-compose command in order to start containers from images:
+
+* `rabbitmq`, with forwarded ports 5672 and 15672 
+* `mariadb`, with forwarded port 3306 and database name `messagedb`
+* `francesco/waiting`, with forwarded port 3000
+
+### Configure rabbitmq
+
+The command
+
+```
+make configure
+```
+
+is mandatory to create the two queues used by services. 
+
+Allow some time (few seconds) after `make init` before running this, because
+it needs rabbitmq to be up and running.
+
+### Run applications 
+
+The services can be run in two ways:
+* launching them from terminal with `java`
+* launching them as docker images
+
+For the `java` option, you can use:
+```
+java -jar ./synthesia-api/build/libs/synthesia-api-0.0.1-SNAPSHOT.jar # api service
+SYNTHESIA_KEY=<synthesia_api_key> java -jar ./synthesia-job/build/libs/synthesia-job-0.0.1-SNAPSHOT.jar # job-service
+```
+
+For the `docker` option, you can use:
+```
+make synthesia_key=<synthesia_api_key> run
+```
+or to run them in background:
+```
+make synthesia_key=<synthesia_api_key> run-background
+```
+Docker will forward port 8080, where api will be exposed.
+
+The Synthesia api key refers to one given for accessing hiring.synthesia.io apis. 
+
+## For cleaning at the end
+
+When needed to clean all, stop docker containers of two services and also issue the command
+
+```
+make clean
+```
+
+to clean and remove containers and network created by docker-compose.
+
+## Usage
+
+### Invoke sign api
+
+Api-service is exposed on port 8080 in http. It is possible to call it using curl or with swagger.
+
+The curl is simply:
+```
+curl http://localhost:8080/crypto/sign?message=<messageText>
+```
+
+Otherwise, browsing `http://localhost:8080/swagger-ui.html` it is possible
+to use swagger ui to call the `crypto/sign` api.
+
+### What to expect
+
+When calling `crpyto/sign` api the results could be two:
+
+* response within 2 seconds with signature filled:
+
+```
+{
+    "signature": "<complete filled signature>",
+    "info": "Here is your signature!",
+    "waitingWebsite": null,
+    "pollingPath": null
+}
+```
+
+in this case the response contains signature, so everything is ok.
+
+
+* response of ~2 seconds with signature absent
+
+```
+{
+    "signature": null,
+    "info": "We are working for you, don't worry!",
+    "waitingWebsite": "http://localhost:3000/?identifier=<identifier>",
+    "pollingPath": "/signature/<identifier>"
+}
+```
+
+since signature process is ongoing, we provide two methods for caller to 
+be aware of readiness of signature:
+
+* [programmatic way] `pollingPath` field contains a path that can be used for polling the signature.
+In this case, calling `GET http://localhost:8080/signature/<identifier>` you will get the signature, 
+as soon as synthesia api will reply
+* [waiting way] `waitingWebsite` field contains the path to react waiting single page application.
+As soon as synthesia api will reply, you will see signature in the page.
+
+## Note on storage
+
+In mariadb database, requested messages and obtained signatures will be stored.
+
+This storage has been used for two reasons:
+* avoid to request same message many times, when still waiting for signature
+* get signatures for already "signed" messages
+
+## Performance tests
+
+For performance tests, `artillery` ([link](https://www.artillery.io/)) has been used.
+
+After installing it with `npm`, it is possible to run it in this way:
+```
+cd artillery
+artillery run config.yml -o output.json
+artillery report output.json  ## that produces <output_file>.json.html readable report
+```
+or simply
+```
+make performance-test
+```
+
+This test will execute 3 phases:
+* Warm up (60 req per min) for 60 seconds
+* Ramp up load (from 60 to 300 req per min) in 60 seconds
+* Sustained load (300 req per min) for 180 seconds
+
+As for messages, lines of file `keyword.csv` have been used.
+
+## "Same message many times" test
+
+TODO
+
+## Author
+
+Francesco Bonesi
+
+<francesco.bonesi90@gmail.com>
