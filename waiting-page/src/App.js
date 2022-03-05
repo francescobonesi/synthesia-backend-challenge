@@ -9,12 +9,13 @@ import error from './warning.svg';
 function App() {
 
   const [frequency, setFrequency] = useState(10000);
-  const [signature, setSignature] = useState("no signature yet");
+  const [signature, setSignature] = useState("");
   const [info, setInfo] = useState("no info yet");
   const [image, setImage] = useState(refresh)
   const [imageClass, setImageClass] = useState("App-logo")
+  const [signatureClass, setSignatureClass] = useState("signaturewait")
+
   const identifier = new URLSearchParams(window.location.search).get('identifier');
-  const title = "Signature waiting website"
 
   const update = () => {
     fetch(`http://localhost:8080/signature/${identifier}`)
@@ -26,13 +27,15 @@ function App() {
           setFrequency(null);
           setImage(done);
           setImageClass("App-logo-stop");
+          setSignatureClass("signature")
         }
       })
       .catch((err) => {
         console.log(err)
-        setInfo("Sorry, there is something wrong in the requested identifier.")
+        setInfo("We are very sorry...")
         setFrequency(null);
         setImage(error);
+        setSignature("There is something wrong in the requested identifier")
         setImageClass("App-logo-stop");
       })
   }
@@ -54,18 +57,17 @@ function App() {
 
   return <div className="App">
 
-    <h2>{title}</h2>
+    <h2>{info}</h2>
 
-    <p>{info}</p>
+    {/* <p>{info}</p> */}
 
     <table>
       <tr>
-        <th>Signature</th>
-        <th></th>
+        <th colspan="2">Signature</th>
       </tr>
       <tr>
-        <td>{signature}</td>
-        <td><img src={image} className={imageClass} alt="logo" /></td>
+        <td className='status'><img src={image} className={imageClass} alt="logo" /></td>
+        <td className={signatureClass}>{signature}</td>
       </tr>
     </table>
 

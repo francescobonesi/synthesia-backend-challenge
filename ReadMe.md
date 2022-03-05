@@ -7,20 +7,25 @@ Solution for Synthesia Backend Tech Challenge: [link](https://www.notion.so/Synt
 
 The solution is composed by a rest api service (Api-service), exposing /crypto/sign endpoint, 
 and an asynchronous worker (Job-service) that 
-integrates with Synthesia /crypto/sign endpoint.
+integrates with Synthesia `/crypto/sign` and `crypto/verify` apis.
 
 The two components communicate via RabbitMQ message broker 
 using two queues in order to be decoupled, independent and asynchronous.
 
-For each http request, the Api-service will queue a message that will be processed by Job-service.
-When the elaboration of signature is done by Job-service, it will queue the signature in another queue and
-the Api-service will read it and store it in a database.
+For each http request, the Api-service will publish a message in a queue that will be consumed by Job-service.
+When the elaboration of signature is done by Job-service, it will publish the signature in a separate queue and
+the Api-service will consume it and store it in a database.
+
+The Job-service will also verify, with `crypto/verify` api, the correctness of signature before sending it.
 
 For each http request, after sending the message, the Api-service will wait 2 seconds for the signature to arrive.
-If the 2 seconds pass, then will return to caller a courtesy message and a link to a single page application
+If signature arrives within 2 seconds, it will be provided in response.
+Otherwise, if 2 seconds pass, then will return to caller a courtesy message and a link to a single page application
 that will display the signature as soon as the job finish processing it.
 
-The single page application polls a second api from Api-service, /signature/<identifier>, in order to get 
+The services are meant to scale independently between each other, due to decoupled architecture.
+
+The single page application polls a second api from Api-service, `/signature/<identifier>`, in order to get 
 stored signatures when available. This webapp will entertain the requester while they wait for signature.
 
 ## Prerequisites
@@ -234,7 +239,7 @@ After installing it with `npm`, it is possible to run it in this way:
 ```
 cd artillery
 artillery run config.yml -o output.json
-artillery report output.json  ## that produces <output_file>.json.html readable report
+artillery report output.json  ## that produces output.json.html readable report
 ```
 or simply
 ```
@@ -250,7 +255,37 @@ As for messages, lines of file `keyword.csv` have been used.
 
 ## "Same message many times" test
 
-TODO
+For simulating the sending of same message many times, always using `artillery`:
+
+```
+cd artillery
+artillery run single-message-many-times.yml -o smmt-output.json
+artillery report smmt-output.json  ## that produces smmt-output.json.html readable report
+```
+or simply
+```
+make same-message-many-times
+```
+
+This test will execute 1 phase:
+* High load (600 req per min) for 180 seconds
+
+This test will issue always the same message but the job will only be triggered the first time. If the signature 
+is given immediately, then all following requests will find the saved value in db. Otherwise, if signature 
+is not given and needs time, all requests will exceed 2 seconds but never issue the message, already queued.
+
+
+## What if we were in AWS world
+
+The developed solution is an on-premise one, but adaptable to AWS (or generally cloud) scenario.
+
+* AWS SQS instead of RabbitMQ for queue management
+* AWS RDS instead of MariaDB 
+* Spring Boot api service: deployed and exposed as AWS Lambda through AWS API Gateway, 
+with adaptation and java native compilation (for optimizing start up times)
+* Spring Boot job service: deployed as ECS service, because takes too much time to be deployed as Lambda.
+* React single page app: deployed as hosted static website on AWS S3, with AWS Cloudfront on top if needed
+
 
 ## Author
 

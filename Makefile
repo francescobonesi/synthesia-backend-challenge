@@ -1,4 +1,4 @@
-.PHONY: compile build-react-image build-job-image build-api-image build run run-background configure clean performance-test
+.PHONY: compile build-react-image build-job-image build-api-image build run run-background configure clean performance-test same-message-many-times
 
 java_home ?= ~/.sdkman/candidates/java/17.0.2-zulu/
 synthesia_key ?= not_valid_key_by_default
@@ -36,3 +36,6 @@ clean:
 
 performance-test:
 	cd artillery && artillery run config.yml -o output.json && artillery report output.json
+
+same-message-many-times:
+	cd artillery && artillery run single-message-many-times.yml -o smmt-output.json && artillery report smmt-output.json

@@ -1,0 +1,12 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 180
+      arrivalRate: 10
+      name: Sustained load (600 req per min)
+
+scenarios:
+  - flow:
+      - get:
+          url: "/crypto/sign?message=always%20the%20same%20message"
+

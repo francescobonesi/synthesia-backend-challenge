@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  background-color: #c4dbc1;
+  color: #043539;
 }
 
 .App-logo {
@@ -16,21 +18,6 @@
 .App-logo-stop {
   height: 10vmin;
   pointer-events: none;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
 }
 
 @keyframes App-logo-spin {
@@ -51,11 +38,38 @@ table {
   border: 1px solid #ddd;
 }
 
-th, td {
+td {
   text-align: left;
-  padding: 16px;
+  padding: 1%;
+}
+
+th {
+  text-align: center;
+  padding: 1%;
 }
 
 tr:nth-child(even) {
   background-color: #f2f2f2;
+  color: #043539;
+}
+
+tr:nth-child(odd) {
+  background-color: #043539;
+  color: #e0b420
+}
+
+.signature {
+  width: 90%;
+  word-break: break-all;
+}
+
+.signaturewait {
+  width: 90%;
+  word-break: break-all;
+  text-align: center;
+}
+
+.status {
+  width: 10%;
+  text-align: center;
 }
