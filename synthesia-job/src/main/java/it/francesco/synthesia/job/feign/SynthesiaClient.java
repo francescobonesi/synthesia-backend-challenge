@@ -10,4 +10,7 @@ public interface SynthesiaClient {
     @GetMapping("/crypto/sign")
     String getSignature(@RequestParam("message") String message);
 
+    @GetMapping("/crypto/verify")
+    String verifySignature(@RequestParam("message") String message, @RequestParam("signature") String signature);
+
 }

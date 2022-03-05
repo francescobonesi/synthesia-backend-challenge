@@ -1,7 +1,6 @@
 
-MANCANO 2 COSE
+MANCANO 1 COSE
 
-video youtube di attesa sul sito della firma o altro mentre persona attende
 chiamata a api di verifica nel job
 
 

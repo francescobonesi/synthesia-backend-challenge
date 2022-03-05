@@ -10,14 +10,10 @@ subprojects {
 
     apply plugin: 'java'
 
-//    configurations {
-//        developmentOnly
-//        runtimeClasspath {
-//            extendsFrom developmentOnly
-//        }
-//        compileOnly {
-//            extendsFrom annotationProcessor
-//        }
-//    }
+    test {
+        dependsOn cleanTest
+        testLogging.showStandardStreams = true
+    }
+
 }
 

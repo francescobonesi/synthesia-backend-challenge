@@ -17,8 +17,9 @@ queue:
 
 synthesia:
   url: "https://hiring.api.synthesia.io"
-  key: "0b91c7c988a71242641b9d3cf3a9a8b6"
-  retryTime: 10000
+  key: "wrong key here..."
+  retryTime: 10000  # milliseconds  (10000 ms = 10 s)
+  timeout: 600000  # milliseconds (600000 ms = 10 m)
 
 feign:
   client:

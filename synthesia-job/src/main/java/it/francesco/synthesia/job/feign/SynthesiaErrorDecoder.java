@@ -16,13 +16,13 @@ public class SynthesiaErrorDecoder implements ErrorDecoder {
         HttpStatus responseStatus = HttpStatus.valueOf(response.status());
 
         if (responseStatus.is5xxServerError()) {
-            log.info("API integration returned 5xx code");
+            log.info("API integration {} returned 5xx code", methodKey);
             return new SynthesiaApiException(ERROR_RESPONSE_CODE, responseStatus.toString());
         } else if (responseStatus.is4xxClientError()) {
-            log.info("API integration returned 4xx code");
+            log.info("API integration {} returned 4xx code", methodKey);
             return new SynthesiaApiException(ERROR_RESPONSE_CODE, responseStatus.toString());
         } else {
-            log.info("API integration returned not managed error code");
+            log.info("API integration {} returned not managed error code", methodKey);
             return new Exception(ERROR_RESPONSE_CODE);
         }
     }
