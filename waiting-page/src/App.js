@@ -14,15 +14,22 @@ function App() {
   const [image, setImage] = useState(refresh)
   const [imageClass, setImageClass] = useState("App-logo")
   const [signatureClass, setSignatureClass] = useState("signaturewait")
+  const [gameVisible, setGameVisible] = useState(false)
 
   const identifier = new URLSearchParams(window.location.search).get('identifier');
+
+  const showGame = (visible) => {
+    console.log("show " + JSON.stringify(visible))
+    if (visible.gameVisible) setGameVisible(false);
+    else setGameVisible(true);
+  }
 
   const update = () => {
     fetch(`http://localhost:8080/signature/${identifier}`)
       .then(response => response.json())
       .then(data => {
         setInfo(data.info)
-        setSignature(data.signature == null ? "Waiting for signature" : data.signature)
+        setSignature(data.signature == null ? "Waiting for signature, can take a few minutes" : data.signature)
         if (data.signature != null) {
           setFrequency(null);
           setImage(done);
@@ -55,6 +62,8 @@ function App() {
 
   update()
 
+
+
   return <div className="App">
 
     <h2>{info}</h2>
@@ -63,7 +72,7 @@ function App() {
 
     <table>
       <tr>
-        <th colspan="2">Signature</th>
+        <th colSpan="2">Signature</th>
       </tr>
       <tr>
         <td className='status'><img src={image} className={imageClass} alt="logo" /></td>
@@ -71,9 +80,15 @@ function App() {
       </tr>
     </table>
 
-    {/* <iframe width="560" height="315" src="https://www.youtube.com/embed/ao-Sahfy7Hg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> */}
+    <div>
+      <p>Don't you know what to do while waiting?</p>
+      <button onClick={() => showGame({ gameVisible })}> {gameVisible ? "Close it" : "Open up"} </button>
+    </div>
 
-
+    <div className='game' style={{ visibility: gameVisible ? "visible" : "hidden" }}>
+      <iframe name="sudokuWindow2" src="https://123sudoku.co.uk/sudokulib/generate.php?size=large&level=3" width="500" height="640" frameBorder="0" scrolling="no">
+      </iframe>
+    </div>
   </div>
 
 

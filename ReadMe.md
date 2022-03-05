@@ -1,4 +1,10 @@
 
+MANCANO 2 COSE
+
+video youtube di attesa sul sito della firma o altro mentre persona attende
+chiamata a api di verifica nel job
+
+
 # Synthesia Backend Tech Challenge
 
 Solution for Synthesia Backend Tech Challenge: [link](https://www.notion.so/Synthesia-Backend-Tech-Challenge-52a82f750aed436fbefcf4d8263a97be)

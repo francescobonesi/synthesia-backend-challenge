@@ -73,3 +73,7 @@ tr:nth-child(odd) {
   width: 10%;
   text-align: center;
 }
+
+.game {
+  margin-top: 1%
+}
