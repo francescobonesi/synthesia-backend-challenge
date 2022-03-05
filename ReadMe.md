@@ -123,7 +123,7 @@ The command
 make init
 ```
 
-will run docker-compose command in order to start containers from images:
+will run `docker-compose up` command in order to start containers from images:
 
 * `rabbitmq`, with forwarded ports 5672 and 15672 
 * `mariadb`, with forwarded port 3306 and database name `messagedb`
@@ -137,12 +137,12 @@ The command
 make configure
 ```
 
-is mandatory to create the two queues used by services. 
+is mandatory in order to create the two queues used by services. 
 
 Allow some time (few seconds) after `make init` before running this, because
-it needs rabbitmq to be up and running.
+it needs RabbitMQ to be up and running.
 
-### Run 
+### Run services
 
 The services can be run in two ways:
 * launching them from terminal with `java`
@@ -162,7 +162,9 @@ or to run them in background:
 ```
 make synthesia_key=<synthesia_api_key> run-background
 ```
-Docker will forward port 8080, where api will be exposed.
+
+This will start both services and docker will forward port 8080, 
+where Api-service will be exposed.
 
 The Synthesia api key refers to one given for accessing `hiring.synthesia.io` apis. 
 
@@ -180,14 +182,14 @@ to clean and remove containers and network created by docker-compose.
 
 ### Invoke sign api
 
-Api-service is exposed on port 8080 in http. It is possible to call it using curl or with swagger.
+Api-service is exposed on port 8080 in http. It is possible to call it using curl or with swagger UI.
 
-The curl is simply:
+The curl is:
 ```
 curl http://localhost:8080/crypto/sign?message=<messageText>
 ```
 
-Otherwise, browsing `http://localhost:8080/swagger-ui.html` it is possible
+Otherwise, browsing `http://localhost:8080/swagger-ui.html`, it is possible
 to use swagger ui to call the `crypto/sign` api.
 
 ### What to expect
@@ -234,13 +236,20 @@ In mariadb database, requested messages and obtained signatures will be stored.
 
 This storage has been used for two reasons:
 * avoid to request same message many times, when still waiting for signature
-* get signatures for already "signed" messages
+* get signatures for already "signed" messages 
+
 
 ## Performance tests
 
-For performance tests, `artillery` ([link](https://www.artillery.io/)) has been used.
+For performance tests, `artillery` ([link](https://www.artillery.io/)) could be used.
 
-After installing it with `npm`, it is possible to run it in this way:
+If not installed:
+```
+npm -g i artillery
+```
+
+Then, it is possible to run performance test in this way:
+
 ```
 cd artillery
 artillery run config.yml -o output.json
@@ -257,10 +266,11 @@ This test will execute 3 phases:
 * Sustained load (300 req per min) for 180 seconds
 
 As for messages, lines of file `keyword.csv` have been used.
+This file contains randomly generated messages.
 
 ## "Same message many times" test
 
-For simulating the sending of same message many times, always using `artillery`:
+For simulating the sending of the same message many times, always using `artillery`:
 
 ```
 cd artillery
