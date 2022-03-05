@@ -5,7 +5,7 @@ import feign.RequestTemplate;
 
 public class SynthesiaRequestInterceptor implements RequestInterceptor {
 
-    public String apiKey;
+    public final String apiKey;
 
     public SynthesiaRequestInterceptor(String apiKey) {
         this.apiKey = apiKey;

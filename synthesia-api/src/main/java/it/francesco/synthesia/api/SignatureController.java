@@ -25,8 +25,8 @@ public class SignatureController {
     static final String COURTESY_MESSAGE = "We are working for you, don't worry!";
     static final String GIVING_SIGNATURE_MESSAGE = "Here is your signature!";
 
-    public SignatureService signatureService;
-    public String baseWaitingUrl;
+    public final SignatureService signatureService;
+    public final String baseWaitingUrl;
 
     @Autowired
     public SignatureController(SignatureService signatureService,

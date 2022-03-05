@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 public class RabbitMqListener {
 
     Map<String, List<Waiter>> signatureWaiters;
-    public MessageRepository messageRepository;
+    public final MessageRepository messageRepository;
 
     @Autowired
     public RabbitMqListener(MessageRepository messageRepository) {

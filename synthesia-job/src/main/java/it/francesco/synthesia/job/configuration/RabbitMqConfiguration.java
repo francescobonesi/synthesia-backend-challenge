@@ -15,9 +15,9 @@ import org.springframework.context.annotation.Configuration;
 @EnableRabbit
 public class RabbitMqConfiguration {
 
-    public int concurrentConsumers;
-    public int maxConcurrentConsumers;
-    public int prefetchCount;
+    public final int concurrentConsumers;
+    public final int maxConcurrentConsumers;
+    public final int prefetchCount;
 
     @Autowired
     public RabbitMqConfiguration(@Value("${job.prefetch}") int prefetch,
