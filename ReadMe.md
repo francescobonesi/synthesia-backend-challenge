@@ -4,7 +4,7 @@ Solution for Synthesia Backend Tech Challenge: [link](https://www.notion.so/Synt
 
 ## Overview
 
-The solution is composed by a rest api service (Api-service), exposing /crypto/sign endpoint, 
+The solution is composed by a rest api service (Api-service), exposing `/crypto/sign` endpoint, 
 and an asynchronous worker (Job-service) that 
 integrates with Synthesia `/crypto/sign` and `crypto/verify` apis.
 
@@ -19,8 +19,8 @@ The Job-service will also verify, with `crypto/verify` api, the correctness of s
 
 For each http request, after sending the message, the Api-service will wait 2 seconds for the signature to arrive.
 If signature arrives within 2 seconds, it will be provided in response.
-Otherwise, if 2 seconds pass, then will return to caller a courtesy message and a link to a single page application
-that will display the signature as soon as the job finish processing it.
+Otherwise, if 2 seconds pass, then it will be returned to caller a courtesy message and a link to a single page application
+that will display the signature as soon as the job finishes processing it.
 
 The services are meant to scale independently between each other, due to decoupled architecture.
 
@@ -37,11 +37,11 @@ stored signatures when available. This webapp will entertain the requester while
 
 ## Components
 
-* RabbitMQ [link](https://www.rabbitmq.com/): message broker used in this project for queues and asynchronous job patterns
-* MariaDB [link](https://mariadb.org/): Relational DB used for storing in process jobs and signed messages
+* RabbitMQ [link](https://www.rabbitmq.com/): message broker used in this project for queues and asynchronous patterns
+* MariaDB [link](https://mariadb.org/): Relational DB used for storing in progress jobs and signed messages
 * React Single Page Application, called Waiting website: SPA with signature when available
 * Spring Boot api service: rest api service exposing reliable endpoint for signature
-* Spring Boot job service: asynchronous worker for obtaining signature when available
+* Spring Boot job service: asynchronous worker for obtaining signature as soon as available
 
 ## Structure
 
@@ -50,12 +50,9 @@ Here follows the tree of solution.
 ```
 .
 ├── artillery
-│   ├── config.yml
-│   └── keyword.csv
 ├── build.gradle
 ├── docker-compose.yml
 ├── gradle
-│   └── wrapper
 ├── gradlew
 ├── gradlew.bat
 ├── Makefile
@@ -73,24 +70,35 @@ Here follows the tree of solution.
 │   └── src
 └── waiting-page  ## React single page app
     ├── Dockerfile
-    ├── node_modules
     ├── package.json
-    ├── package-lock.json
     ├── public
     └── src
 ```
 
 ## Setup
 
-For all setup, commands have been collected in Makefile.
+### Overview
+
+For all setup, commands have been collected in a Makefile.
+
+In order to make the solution work, the following steps must be followed:
+* compile
+* build
+* initialization
+* configuration
+* run
+
+In following sections each step is described.
 
 ### Compile
 
-Use java 17 jdk to compile both applications
+Use java 17 jdk to compile both applications. 
 
+The command
 ```
 make java_home=<path_to_jdk> compile
 ```
+will compile and build jar file.
 
 It uses gradle wrapper, configured inside project. 
 This also executes application unit tests.
@@ -98,18 +106,16 @@ This also executes application unit tests.
 ### Build docker images
 
 The command
-
 ```
 make build
 ```
-
 will build 3 docker images:
 
-* francesco/api  with spring boot api service
-* francesco/job  with spring boot job service
-* francesco/waiting  with waiting react spa
+* `francesco/api`  with spring boot api service
+* `francesco/job`  with spring boot job service
+* `francesco/waiting`  with waiting react spa
 
-### Start infrastructure
+### Initialization
 
 The command
 
@@ -123,7 +129,7 @@ will run docker-compose command in order to start containers from images:
 * `mariadb`, with forwarded port 3306 and database name `messagedb`
 * `francesco/waiting`, with forwarded port 3000
 
-### Configure rabbitmq
+### Configuration
 
 The command
 
@@ -136,7 +142,7 @@ is mandatory to create the two queues used by services.
 Allow some time (few seconds) after `make init` before running this, because
 it needs rabbitmq to be up and running.
 
-### Run applications 
+### Run 
 
 The services can be run in two ways:
 * launching them from terminal with `java`

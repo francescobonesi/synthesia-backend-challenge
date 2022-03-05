@@ -30,17 +30,22 @@ function App() {
       .then(data => {
         setInfo(data.info)
         setSignature(data.signature == null ? "Waiting for signature, can take a few minutes" : data.signature)
+        
+
         if (data.signature != null) {
           setFrequency(null);
           setImage(done);
           setImageClass("App-logo-stop");
           setSignatureClass("signature")
         }
+        else {
+          setImageClass("App-logo")
+          setImage(refresh)
+        }
       })
       .catch((err) => {
         console.log(err)
         setInfo("We are very sorry...")
-        setFrequency(null);
         setImage(error);
         setSignature("There is something wrong in the requested identifier")
         setImageClass("App-logo-stop");
