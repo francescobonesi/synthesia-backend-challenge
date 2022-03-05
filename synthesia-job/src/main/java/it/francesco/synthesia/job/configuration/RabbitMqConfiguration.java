@@ -17,12 +17,15 @@ public class RabbitMqConfiguration {
 
     public int concurrentConsumers;
     public int maxConcurrentConsumers;
+    public int prefetchCount;
 
     @Autowired
-    public RabbitMqConfiguration(@Value("${job.concurrent.consumers}") int concurrentConsumers,
+    public RabbitMqConfiguration(@Value("${job.prefetch}") int prefetch,
+                                 @Value("${job.concurrent.consumers}") int concurrentConsumers,
                                  @Value("${job.concurrent.maxConsumers}") int maxConcurrentConsumers) {
         this.concurrentConsumers = concurrentConsumers;
         this.maxConcurrentConsumers = maxConcurrentConsumers;
+        this.prefetchCount = prefetch;
     }
 
 
@@ -42,6 +45,7 @@ public class RabbitMqConfiguration {
         factory.setConcurrentConsumers(concurrentConsumers);
         factory.setMaxConcurrentConsumers(maxConcurrentConsumers);
         factory.setMessageConverter(producerJackson2MessageConverter());
+        factory.setPrefetchCount(prefetchCount);
         return factory;
     }
 

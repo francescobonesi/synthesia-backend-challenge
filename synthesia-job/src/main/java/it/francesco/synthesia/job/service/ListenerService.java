@@ -61,7 +61,8 @@ public class ListenerService {
         }
     }
 
-    @RabbitListener(containerFactory = "rabbitListenerContainerFactory", queues = "${queue.requests}")
+    @RabbitListener(containerFactory = "rabbitListenerContainerFactory",
+            queues = "${queue.requests}")
     public void requestsListener(Message inMessage) throws InterruptedException {
 
         log.info("Request received: " + inMessage);

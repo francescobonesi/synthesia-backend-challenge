@@ -158,7 +158,7 @@ make synthesia_key=<synthesia_api_key> run-background
 ```
 Docker will forward port 8080, where api will be exposed.
 
-The Synthesia api key refers to one given for accessing hiring.synthesia.io apis. 
+The Synthesia api key refers to one given for accessing `hiring.synthesia.io` apis. 
 
 ## For cleaning at the end
 
