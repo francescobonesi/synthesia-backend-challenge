@@ -29,7 +29,7 @@ function App() {
       .then(response => response.json())
       .then(data => {
         setInfo(data.info)
-        setSignature(data.signature == null ? "Waiting for signature, can take a few minutes" : data.signature)
+        setSignature(data.signature == null ? "Waiting for signature, this can take a few minutes" : data.signature)
         
 
         if (data.signature != null) {
@@ -86,7 +86,7 @@ function App() {
     </table>
 
     <div>
-      <p>Don't you know what to do while waiting?</p>
+      <p>Want to do something while waiting?</p>
       <button onClick={() => showGame({ gameVisible })}> {gameVisible ? "Close it" : "Open up"} </button>
     </div>
 
