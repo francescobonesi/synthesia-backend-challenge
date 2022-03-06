@@ -166,7 +166,7 @@ make synthesia_key=<synthesia_api_key> run-background
 This will start both services and docker will forward port 8080, 
 where Api-service will be exposed.
 
-The Synthesia api key refers to one given for accessing `hiring.synthesia.io` apis. 
+In place of `<synthesia_api_key>`, a valid key for accessing `hiring.synthesia.io` apis must be inserted. 
 
 ## For cleaning at the end
 
@@ -207,7 +207,7 @@ When calling `crpyto/sign` api the results could be two:
 }
 ```
 
-in this case the response contains signature, so everything is ok.
+in this case the response contains the signature, so everything is ok.
 
 
 * response of ~2 seconds with signature absent
@@ -225,14 +225,14 @@ since signature process is ongoing, we provide two methods for caller to
 be aware of readiness of signature:
 
 * [programmatic way] `pollingPath` field contains a path that can be used for polling the signature.
-In this case, calling `GET http://localhost:8080/signature/<identifier>` you will get the signature, 
-as soon as synthesia api will reply
-* [waiting way] `waitingWebsite` field contains the path to react waiting single page application.
-As soon as synthesia api will reply, you will see signature in the page.
+In this case, by calling `GET http://localhost:8080/signature/<identifier>`, you will get the signature
+as soon as Synthesia api will reply
+* [website way] `waitingWebsite` field contains the path to React waiting website.
+As soon as Synthesia api will reply, you will see the signature in the page.
 
 ## Note on storage
 
-In mariadb database, requested messages and obtained signatures will be stored.
+In MariaDB database, requested messages and obtained signatures will be stored.
 
 This storage has been used for two reasons:
 * avoid to request same message many times, when still waiting for signature
@@ -285,9 +285,9 @@ make same-message-many-times
 This test will execute 1 phase:
 * High load (600 req per min) for 180 seconds
 
-This test will issue always the same message but the job will only be triggered the first time. If the signature 
+This test will request always the same message but the job will only be triggered the first time. If the signature 
 is given immediately, then all following requests will find the saved value in db. Otherwise, if signature 
-is not given and needs time, all requests will exceed 2 seconds but never issue the message, already queued.
+is not given and needs time, all requests will exceed 2 seconds but never queue again the message for signature.
 
 
 ## What if we were in AWS world
@@ -298,7 +298,7 @@ The developed solution is an on-premise one, but adaptable to AWS (or generally 
 * AWS RDS instead of MariaDB 
 * Spring Boot api service: deployed and exposed as AWS Lambda through AWS API Gateway, 
 with adaptation and java native compilation (for optimizing start up times)
-* Spring Boot job service: deployed as ECS service, because takes too much time to be deployed as Lambda.
+* Spring Boot job service: deployed as ECS service, because each job takes too much time to be deployed as Lambda.
 * React single page app: deployed as hosted static website on AWS S3, with AWS Cloudfront on top if needed
 
 
